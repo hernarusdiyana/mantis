@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 // project import
 import MainCard from 'components/MainCard';
-import OrdersTable from '../dashboard/OrdersTable';
+import PrListTable from '../dashboard/PrListTable';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 
@@ -16,7 +16,7 @@ export default function PrList() {
         reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president, sunk in culpa qui
         officiate descent molls anim id est labours.
       </Typography>
-      <OrdersTable />
+      <PrListTable />
     </MainCard>
   );
 }

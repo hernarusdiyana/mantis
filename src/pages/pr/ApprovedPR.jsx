@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 // project import
 import MainCard from 'components/MainCard';
-import PrList from '../dashboard/PrList';
+import PrList from '../dashboard/PrListTable';
 
 // ==============================|| SAMPLE PAGE ||============================== //
 

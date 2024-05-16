@@ -108,7 +108,7 @@ export default function DashboardDefault() {
         <Typography variant="h5">Dashboard</Typography>
         <DataComponent />
       </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3} component={Link} to="/PrList" style={{ textDecoration: 'none' }}>
+      <Grid item xs={12} sm={6} md={4} lg={3} component={Link} to="/PrListTable" style={{ textDecoration: 'none' }}>
         {/* <Link to="/PrList"> */}
         <AnalyticEcommerce title="Total Purchase Requisition" count={prNumberCounts} percentage={59.3} extra="35,000" />
         {/* </Link> */}

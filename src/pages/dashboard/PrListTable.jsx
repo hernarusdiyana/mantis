@@ -22,18 +22,9 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import axios from 'axios';
 
-export default function PrList() {
+export default function PrListTable() {
   let emptyProduct = {
-      // id: null,
-      // name: '',
-      // image: null,
-      // description: '',
-      // category: null,
-      // price: 0,
-      // quantity: 0,
-      // rating: 0,
-      // inventoryStatus: 'INSTOCK'
-       id: null,
+    id: null,
     pr_number: '',
     requester_name: '',
     pr_date: '',
