@@ -57,7 +57,7 @@ const MainRoutes = {
       {
         path: '/rejected-pr',
         element: <RejectedPR />
-      }
+      },
     ]
   // };
 };

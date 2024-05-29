@@ -17,7 +17,7 @@ import Box from '@mui/material/Box';
 
 // third party
 import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { Formik, Form, Field, useField } from 'formik';
 
 // project import
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -26,12 +26,50 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
+import axios from 'axios';
 
 // ============================|| JWT - REGISTER ||============================ //
 
 export default function AuthRegister() {
+  // const [,=field, meta] = useField(props);
   const [level, setLevel] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const [userData, setUserData] = useState({
+    firstname: '',
+    lastname: '',
+    username: '',
+    email: '',
+    password: '',
+  });
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUserData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (values, actions) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:5000/add_user', userData);
+      console.log(response.data);
+      actions.setSubmitting(false);
+      // Reset form setelah submit
+      setUserData({
+        firstname: '',
+        lastname: '',
+        username: '',
+        email: '',
+        password: '',
+        role: ''
+      });
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -49,6 +87,19 @@ export default function AuthRegister() {
     changePassword('');
   }, []);
 
+  const MySelect = ({ label, ...props }) => {
+    const [field, meta] = useField(props);
+    return (
+      <div>
+        <label htmlFor={props.id || props.name}>{label}</label>
+        <select {...field} {...props} />
+        {meta.touched && meta.error ? (
+          <div className="error">{meta.error}</div>
+        ) : null}
+      </div>
+    );
+  };
+
   return (
     <>
       <Formik
@@ -56,19 +107,22 @@ export default function AuthRegister() {
           firstname: '',
           lastname: '',
           email: '',
-          company: '',
+          username: '',
           password: '',
+          role: '',
           submit: null
         }}
+        onSubmit={handleSubmit}
         validationSchema={Yup.object().shape({
           firstname: Yup.string().max(255).required('First Name is required'),
           lastname: Yup.string().max(255).required('Last Name is required'),
+          username: Yup.string().max(20).required('Must be a valid username'),
           email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
           password: Yup.string().max(255).required('Password is required')
         })}
       >
         {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form noValidate onSubmit={handleSubmit}>
+          <form>
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 <Stack spacing={1}>
@@ -115,22 +169,39 @@ export default function AuthRegister() {
               </Grid>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="company-signup">Company</InputLabel>
+                  <InputLabel htmlFor="username-signup">Username</InputLabel>
                   <OutlinedInput
                     fullWidth
-                    error={Boolean(touched.company && errors.company)}
-                    id="company-signup"
-                    value={values.company}
-                    name="company"
+                    error={Boolean(touched.username && errors.username)}
+                    id="username-signup"
+                    value={values.username}
+                    name="username"
                     onBlur={handleBlur}
                     onChange={handleChange}
                     placeholder="Demo Inc."
                     inputProps={{}}
                   />
                 </Stack>
-                {touched.company && errors.company && (
-                  <FormHelperText error id="helper-text-company-signup">
-                    {errors.company}
+                {touched.username && errors.username && (
+                  <FormHelperText error id="helper-text-username-signup">
+                    {errors.username}
+                  </FormHelperText>
+                )}
+              </Grid>
+              <Grid item xs={12}>
+                <Stack spacing={1}>
+                <MySelect label="Job Type" name="jobType">
+                  
+                  <option value="">Select a Role</option>
+                  <option value="{values.role}" onChange={handleChange}>Admin</option>
+                  <option value="{values.role}" onChange={handleChange}>Procurement</option>
+                  <option value="{values.role}" onChange={handleChange}>Purchasing</option>
+                </MySelect>
+
+                </Stack>
+                {touched.role && errors.role && (
+                  <FormHelperText error id="helper-text-role-signup">
+                    {errors.role}
                   </FormHelperText>
                 )}
               </Grid>
@@ -146,7 +217,7 @@ export default function AuthRegister() {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="demo@company.com"
+                    placeholder="demo@username.com"
                     inputProps={{}}
                   />
                 </Stack>

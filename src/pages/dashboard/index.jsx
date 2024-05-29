@@ -51,36 +51,7 @@ const actionSX = {
 };
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
-const DataComponent = () => {
-  const [data, setData] = useState([]);
 
-  useEffect(() => {
-    // Melakukan permintaan HTTP ke backend Flask
-    axios
-      .get('/api/test')
-      .then((response) => {
-        setData(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-  }, []);
-
-  return (
-    <div>
-      <h1>Data Collection</h1>
-      <ul>
-        {data.map((item) => (
-          <li key={item._id}>
-            <p>ID: {item._id}</p>
-            <p>Nama: {item.name}</p>
-            {/* Tambahan field lainnya sesuai dengan struktur data */}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
 
 export default function DashboardDefault() {
   const [prNumberCounts, setPrNumberCounts] = useState(0);
@@ -105,10 +76,9 @@ export default function DashboardDefault() {
     <Grid container rowSpacing={4.5} columnSpacing={2.75}>
       {/* row 1 */}
       <Grid item xs={12} sx={{ mb: -2.25 }}>
-        <Typography variant="h5">Dashboard</Typography>
-        <DataComponent />
+        <Typography variant="h5">Dashboard</Typography>        
       </Grid>
-      <Grid item xs={12} sm={6} md={4} lg={3} component={Link} to="/PrListTable" style={{ textDecoration: 'none' }}>
+      <Grid item xs={12} sm={6} md={4} lg={3} component={Link} to="/prlist" style={{ textDecoration: 'none' }}>
         {/* <Link to="/PrList"> */}
         <AnalyticEcommerce title="Total Purchase Requisition" count={prNumberCounts} percentage={59.3} extra="35,000" />
         {/* </Link> */}

@@ -22,18 +22,9 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import axios from 'axios';
 
-export default function RecentPRTable() {
+export default function RejectedTable() {
   let emptyProduct = {
-      // id: null,
-      // name: '',
-      // image: null,
-      // description: '',
-      // category: null,
-      // price: 0,
-      // quantity: 0,
-      // rating: 0,
-      // inventoryStatus: 'INSTOCK'
-       id: null,
+    id: null,
     pr_number: '',
     requester_name: '',
     pr_date: '',
@@ -190,6 +181,10 @@ export default function RecentPRTable() {
       setProduct(_product);
   };
 
+  const rightToolbarTemplate = () => {
+      return <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />;
+  };
+
   const imageBodyTemplate = (rowData) => {
       return <img src={`https://primefaces.org/cdn/primereact/images/product/${rowData.image}`} alt={rowData.image} className="shadow-2 border-round" style={{ width: '64px' }} />;
   };
@@ -233,7 +228,7 @@ export default function RecentPRTable() {
 
   const header = (
       <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-          {/* <h4 className="m-0">Recent PR</h4> */}
+          <h4 className="m-0"></h4>
           <IconField iconPosition="left">
               <InputIcon className="pi pi-search" />
               <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
@@ -263,6 +258,7 @@ export default function RecentPRTable() {
       <div>
           <Toast ref={toast} />
           <div className="card">
+              <Toolbar className="mb-4" right={rightToolbarTemplate}></Toolbar>
 
               <DataTable ref={dt} value={products} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)}
                       dataKey="id"  paginator rows={10} rowsPerPageOptions={[5, 10, 25]}

@@ -230,13 +230,13 @@ export default function ProductsDemo() {
 
   const getSeverity = (product) => {
       switch (product.inventoryStatus) {
-          case 'INSTOCK':
+          case 'APPROVED':
               return 'success';
 
-          case 'LOWSTOCK':
+          case 'NEED APPROVE':
               return 'warning';
 
-          case 'OUTOFSTOCK':
+          case 'REJECTED':
               return 'danger';
 
           default:
@@ -255,8 +255,8 @@ export default function ProductsDemo() {
   );
   const productDialogFooter = (
       <React.Fragment>
-          <Button label="Cancel" icon="pi pi-times" outlined onClick={hideDialog} />
-          <Button label="Save" icon="pi pi-check" onClick={saveProduct} />
+          <Button label="Reject"  icon="pi pi-times" outlined onClick={hideDialog} />
+          <Button label="Approve" icon="pi pi-check" onClick={saveProduct} />
       </React.Fragment>
   );
   const deleteProductDialogFooter = (
@@ -293,7 +293,7 @@ export default function ProductsDemo() {
               </DataTable>
           </div>
 
-          <Dialog visible={productDialog} style={{ width: '42rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Product Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+          <Dialog visible={productDialog} style={{ width: '42rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="PR Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
               {product.image && <img src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`} alt={product.image} className="product-image block m-auto pb-3" />}
               <div className="field">
                   <label htmlFor="name" className="font-bold">
@@ -316,7 +316,7 @@ export default function ProductsDemo() {
                   <InputTextarea id="spec" value={product.spec} onChange={(e) => onInputChange(e, 'spec')} required rows={5} cols={20} disabled />
               </div>
 
-              <div className="field">
+              {/* <div className="field">
                   <label className="mb-3 font-bold">Category</label>
                   <div className="formgrid grid">
                       <div className="field-radiobutton col-6">
@@ -336,14 +336,14 @@ export default function ProductsDemo() {
                           <label htmlFor="category4">Fitness</label>
                       </div>
                   </div>
-              </div>
+              </div> */}
 
               <div className="formgrid grid">
                   <div className="field col">
                       <label htmlFor="price" className="font-bold">
                           Price
                       </label>
-                      <InputNumber id="price" value={product.price} onValueChange={(e) => onInputNumberChange(e, 'price')} mode="currency" currency="IDR" locale="en-US" />
+                      <InputNumber id="price" value='1300' onValueChange={(e) => onInputNumberChange(e, 'price')} mode="currency" currency="IDR" locale="en-US" />
                   </div>
                   <div className="field col">
                       <label htmlFor="quantity" className="font-bold">

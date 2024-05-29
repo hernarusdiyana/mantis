@@ -15,10 +15,11 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Swal from 'sweetalert2';
 
 // third party
 import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { FieldArray, Formik, Form, useFormik } from 'formik';
 
 // project import
 import AnimateButton from 'components/@extended/AnimateButton';
@@ -27,12 +28,14 @@ import { strengthColor, strengthIndicator } from 'utils/password-strength';
 // assets
 import EyeOutlined from '@ant-design/icons/EyeOutlined';
 import EyeInvisibleOutlined from '@ant-design/icons/EyeInvisibleOutlined';
+import axios from 'axios';
+import { result, values } from 'lodash';
 
 // ============================|| JWT - REGISTER ||============================ //
 // const API = process.env.REACT_APP_API;
 
 export default function AuthForm() {
-  const [formData, setFormData] = useState({
+  const [state, setState] = useState({
     product: '',
     brand: '',
     desc: '',
@@ -41,235 +44,262 @@ export default function AuthForm() {
     features: '',
     uom: '',
     duration: '',
-    department: ''
+    departement: '',
+    id: ''
   });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const createPR = async () => {
+    const prResponse = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'Are you sure you want to create this Purchase Requisition?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: 'Yes, create it!',
+      cancelButtonText: 'No, cancel!',
+    });
+  
+    if (!prResponse.isConfirmed) return;
+  
     try {
-      const res = await axios.post('http://localhost:5000/login', formData, {
+      const response = await fetch('http://127.0.0.1:5000/prform', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          departement: state.departement,
+          requester_name: state.requester_name,
+          product: state.product,
+          brand: state.brand,
+          desc: state.desc,
+          qty: state.qty,
+          category: state.category,
+          features: state.features,
+          uom: state.uom,
+        })
       });
-      console.log(res.data); // Handle success response
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Swal.fire('Success', 'User created successfully!', 'success');
+        resetForm();
+      } else {
+        Swal.fire('Error', data.message || 'There was an error creating the user.', 'error');
+      }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      Swal.fire('Error', 'There was an error creating the user.', 'error');
+      console.error('Error:', error);
     }
   };
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setState(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+  
+  const resetForm = () => {
+    setState({
+      departement: '',
+      requester_name: '',
+      product: '',
+      brand: '',
+      desc: '',
+      qty: '',
+      category: '',
+      features: '',
+      uom: ''
+    });
+  };
 
-  const {
-    control,
-    register,
-    formState: { isSubmitSuccessful, errors }
-  } = useForm();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createPR(state, resetForm);
+  };
+  
+
+  // const {
+  //   control,
+  //   register,
+  //   formState: { isSubmitSuccessful, errors }
+  // } = useForm();
 
   return (
     <>
-      <Formik
-        initialValues={{
-          rfr_no: '',
-          rfr_date: '',
-          product: '',
-          brand: '',
-          desc: '',
-          qty: '',
-          category: '',
-          features: '',
-          uom: '',
-          duration: '',
-          departement: '',
-          submit: false
-        }}
-        validationSchema={Yup.object().shape({
-          rfr_no: Yup.string().max(255).required('RFR No is required'),
-          rfr_date: Yup.string().max(255).required('RFR Date is required'),
-          product: Yup.string().max(255).required('Product is required'),
-          brand: Yup.string().max(255).required('Brand is required'),
-          qty: Yup.string().max(255).required('Quantity is required'),
-          category: Yup.string().max(255).required('Category is required'),
-          duration: Yup.string().max(255).required('Duration is required'),
-          departement: Yup.string().max(255).required('Departement is required'),
-          email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
-          password: Yup.string().max(255).required('Password is required')
-        })}
-      >
-        {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => (
-          <form
-            onSubmit={async ({ formData, data, formDataJson, event }) => {
-              await axios.fetch('http://localhost:5000/login', {
-                method: 'POST',
-                headers: {
-                  'Content-Type' : 'application/json'
-                },
-                body: formData
-              });
-            }}
-          >
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="product-pr">Product Name*</InputLabel>
-                  <OutlinedInput
-                    id="product-pr"
-                    type="product"
-                    value={values.product}
-                    name="product"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="John"
-                    fullWidth
-                    error={Boolean(touched.product && errors.product)}
-                  />
-                </Stack>
-                {touched.product && errors.product && (
-                  <FormHelperText error id="helper-text-product-pr">
-                    {errors.product}
-                  </FormHelperText>
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="brand-pr">Brand*</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.brand && errors.brand)}
-                    id="brand-pr"
-                    type="brand"
-                    value={values.brand}
-                    name="brand"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Doe"
-                  />
-                </Stack>
-                {touched.brand && errors.brand && (
-                  <FormHelperText error id="helper-text-brand-pr">
-                    {errors.brand}
-                  </FormHelperText>
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="desc-pr">Description</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.desc && errors.desc)}
-                    id="desc-pr"
-                    value={values.desc}
-                    name="desc"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Demo Inc."
-                  />
-                </Stack>
-                {touched.desc && errors.desc && (
-                  <FormHelperText error id="helper-text-desc-pr">
-                    {errors.desc}
-                  </FormHelperText>
-                )}
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="category-pr">Category</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.category && errors.category)}
-                    id="category-pr"
-                    value={values.category}
-                    name="category"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Demo Inc."
-                  />
-                </Stack>
-                {touched.category && errors.category && (
-                  <FormHelperText error id="helper-text-category-pr">
-                    {errors.category}
-                  </FormHelperText>
-                )}
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="qty-pr">Quantity</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.qty && errors.qty)}
-                    id="qty-pr"
-                    type="number"
-                    value={values.qty}
-                    name="qty"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Demo Inc."
-                  />
-                </Stack>
-                {touched.qty && errors.qty && (
-                  <FormHelperText error id="helper-text-qty-pr">
-                    {errors.qty}
-                  </FormHelperText>
-                )}
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="uom-pr">Unit of Measures</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.uom && errors.uom)}
-                    id="uom-pr"
-                    value={values.uom}
-                    name="uom"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Demo Inc."
-                  />
-                </Stack>
-                {touched.uom && errors.uom && (
-                  <FormHelperText error id="helper-text-uom-pr">
-                    {errors.uom}
-                  </FormHelperText>
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <Stack spacing={1}>
-                  <InputLabel htmlFor="departement-pr">Departement</InputLabel>
-                  <OutlinedInput
-                    fullWidth
-                    error={Boolean(touched.departement && errors.departement)}
-                    id="departement-pr"
-                    value={values.departement}
-                    name="departement"
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    placeholder="Demo Inc."
-                  />
-                </Stack>
-                {touched.departement && errors.departement && (
-                  <FormHelperText error id="helper-text-departement-pr">
-                    {errors.departement}
-                  </FormHelperText>
-                )}
-              </Grid>
-
-              {errors.submit && (
-                <Grid item xs={12}>
-                  <FormHelperText error>{errors.submit}</FormHelperText>
-                </Grid>
-              )}
-              <Grid item xs={12}>
-                <AnimateButton>
-                  <Button fullWidth size="large" type="submit" variant="contained" color="primary">
-                    Submit PR
-                  </Button>
-                </AnimateButton>
-              </Grid>
-            </Grid>
+      <Formik>
+      {/* {({ errors, handleBlur, handleChange, handleSubmit, isSubmitting, touched, values }) => ( */}
+          <form onSubmit={handleSubmit} >
+                    <Grid container spacing={3}>
+                    <Grid item xs={12} >
+                        <Stack spacing={1}>
+                          <InputLabel htmlFor="departement">Departement</InputLabel>
+                          <OutlinedInput
+                            id="departement"
+                            type="text"
+                            value={state.departement}
+                            name="departement"
+                            onChange={handleChange}
+                            placeholder="Enter departement"
+                            fullWidth
+                            required
+                          />
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} >
+                        <Stack spacing={1}>
+                          <InputLabel htmlFor="requester_name">Name</InputLabel>
+                          <OutlinedInput
+                            id="requester_name"
+                            type="text"
+                            value={state.requester_name}
+                            name="requester_name"
+                            onChange={handleChange}
+                            placeholder="Enter Requester Name"
+                            fullWidth
+                            required
+                          />
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Stack spacing={1}>
+                          <InputLabel htmlFor="product">Product Name</InputLabel>
+                          <OutlinedInput
+                            id="product"
+                            type="text"
+                            value={state.product}
+                            name="product"
+                            onChange={handleChange}
+                            placeholder="Enter product"
+                            fullWidth
+                            required
+                          />
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Stack spacing={1}>
+                          <InputLabel htmlFor="brand">Brand</InputLabel>
+                          <OutlinedInput
+                            id="brand"
+                            type="text"
+                            value={state.brand}
+                            name="brand"
+                            onChange={handleChange}
+                            placeholder="Enter brand"
+                            fullWidth
+                            required
+                          />
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} >
+                        <Stack spacing={1}>
+                          <InputLabel htmlFor="desc">Description</InputLabel>
+                          <OutlinedInput
+                            id="desc"
+                            type="text"
+                            value={state.desc}
+                            name="desc"
+                            onChange={handleChange}
+                            placeholder="Enter desccription"
+                            fullWidth
+                            required
+                          />
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Stack spacing={1}>
+                          <InputLabel htmlFor="category">Category</InputLabel>
+                          <OutlinedInput
+                            id="category"
+                            type="text"
+                            value={state.category}
+                            name="category"
+                            onChange={handleChange}
+                            placeholder="Enter category"
+                            fullWidth
+                            required
+                          />
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel htmlFor="qty">Quantity</InputLabel>
+                          <OutlinedInput
+                            id="qty"
+                            type="number"
+                            value={state.qty}
+                            name="qty"
+                            onChange={handleChange}
+                            placeholder="0"
+                            fullWidth
+                            required
+                          />
+                        </Stack>
+                      </Grid>
+                      <Grid item xs={12} md={3}>
+                        <Stack spacing={1}>
+                          <InputLabel htmlFor="uom">Unit Of Measures</InputLabel>
+                          <OutlinedInput
+                            id="uom"
+                            type="text"
+                            value={state.uom}
+                            name="uom"
+                            onChange={handleChange}
+                            placeholder="UOM"
+                            fullWidth
+                            required
+                          />
+                        </Stack>
+                      </Grid>
+                    </Grid>
+                    
+                        {/* <div className="my-2">
+                            <input 
+                                type="text" 
+                                value={state.product}
+                                onChange={(e) => setState({ ...state, product: e.target.value})}
+                                className="form-control"
+                                placeholder="Product"
+                                name="product"
+                                autoFocus
+                            />
+                        </div>
+                        <div className="my-2">
+                            <input 
+                                type="text" 
+                                value={state.brand}
+                                onChange={(e) => setState({...state, brand: e.target.value})}
+                                className="form-control"
+                                placeholder="Brand"
+                                name='brand'
+                                autoFocus
+                            />
+                        </div>
+                        <div className="my-2">
+                            <input 
+                                type="text" 
+                                value={state.category}
+                                onChange={(e) => setState({...state, category: e.target.value})}
+                                className="form-control"
+                                placeholder="category"
+                                name='category'
+                                autoFocus
+                            />
+                        </div> */}
+                        <button 
+                            type="submit"
+                            className={`btn ${state.editing ? 'btn-primary': 'btn-info'} mt-4`}
+                        >
+                            {state.editing ? 'EDIT': 'CREATE'}
+                        </button>
+                        
           </form>
-        )}
+      {/* )} */}
       </Formik>
     </>
   );

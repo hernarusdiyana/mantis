@@ -181,15 +181,6 @@ export default function PrListTable() {
       setProduct(_product);
   };
 
-  const leftToolbarTemplate = () => {
-      return (
-          <div className="flex flex-wrap gap-2">
-              <Button label="New" icon="pi pi-plus" severity="success" onClick={openNew} />
-              <Button label="Delete" icon="pi pi-trash" severity="danger" onClick={confirmDeleteSelected} disabled={!selectedProducts || !selectedProducts.length} />
-          </div>
-      );
-  };
-
   const rightToolbarTemplate = () => {
       return <Button label="Export" icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />;
   };
@@ -237,7 +228,7 @@ export default function PrListTable() {
 
   const header = (
       <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
-          <h4 className="m-0">Manage Products</h4>
+          <h4 className="m-0"></h4>
           <IconField iconPosition="left">
               <InputIcon className="pi pi-search" />
               <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
@@ -247,7 +238,7 @@ export default function PrListTable() {
   const productDialogFooter = (
       <React.Fragment>
           <Button label="Cancel" icon="pi pi-times" outlined onClick={hideDialog} />
-          <Button label="Save" icon="pi pi-check" onClick={saveProduct} />
+          <Button label="Print PO" icon="pi pi-check" onClick={saveProduct} />
       </React.Fragment>
   );
   const deleteProductDialogFooter = (
@@ -267,7 +258,7 @@ export default function PrListTable() {
       <div>
           <Toast ref={toast} />
           <div className="card">
-              <Toolbar className="mb-4" left={leftToolbarTemplate} right={rightToolbarTemplate}></Toolbar>
+              <Toolbar className="mb-4" right={rightToolbarTemplate}></Toolbar>
 
               <DataTable ref={dt} value={products} selection={selectedProducts} onSelectionChange={(e) => setSelectedProducts(e.value)}
                       dataKey="id"  paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
@@ -291,23 +282,30 @@ export default function PrListTable() {
               </DataTable>
           </div>
 
-          <Dialog visible={productDialog} style={{ width: '32rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="Product Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
+          <Dialog visible={productDialog} style={{ width: '42rem' }} breakpoints={{ '960px': '75vw', '641px': '90vw' }} header="PO Details" modal className="p-fluid" footer={productDialogFooter} onHide={hideDialog}>
               {product.image && <img src={`https://primefaces.org/cdn/primereact/images/product/${product.image}`} alt={product.image} className="product-image block m-auto pb-3" />}
               <div className="field">
                   <label htmlFor="name" className="font-bold">
                       Name
                   </label>
-                  <InputText id="name" value={product.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !product.name })} />
-                  {submitted && !product.name && <small className="p-error">Name is required.</small>}
+                  <InputText id="name" value={product.requester_name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !product.requester_name })} disabled />
+                  {submitted && !product.requester_name && <small className="p-error">Name is required.</small>}
               </div>
               <div className="field">
-                  <label htmlFor="description" className="font-bold">
+                  <label htmlFor="short_text" className="font-bold">
+                      Request
+                  </label>
+                  <InputText id="short_text" value={product.short_text} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !product.short_text })} disabled />
+                  {submitted && !product.short_text && <small className="p-error">Name is required.</small>}
+              </div>
+              <div className="field">
+                  <label htmlFor="spec" className="font-bold">
                       Description
                   </label>
-                  <InputTextarea id="description" value={product.description} onChange={(e) => onInputChange(e, 'description')} required rows={3} cols={20} />
+                  <InputTextarea id="spec" value={product.spec} onChange={(e) => onInputChange(e, 'spec')} required rows={5} cols={20} disabled />
               </div>
 
-              <div className="field">
+              {/* <div className="field">
                   <label className="mb-3 font-bold">Category</label>
                   <div className="formgrid grid">
                       <div className="field-radiobutton col-6">
@@ -327,14 +325,14 @@ export default function PrListTable() {
                           <label htmlFor="category4">Fitness</label>
                       </div>
                   </div>
-              </div>
+              </div> */}
 
               <div className="formgrid grid">
                   <div className="field col">
                       <label htmlFor="price" className="font-bold">
                           Price
                       </label>
-                      <InputNumber id="price" value={product.price} onValueChange={(e) => onInputNumberChange(e, 'price')} mode="currency" currency="USD" locale="en-US" />
+                      <InputNumber id="price" value='6000000' onValueChange={(e) => onInputNumberChange(e, 'price')} mode="currency" currency="IDR" locale="en-US" />
                   </div>
                   <div className="field col">
                       <label htmlFor="quantity" className="font-bold">

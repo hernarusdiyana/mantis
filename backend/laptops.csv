@@ -1,0 +1,10 @@
+brand,model,processor,ram,storage,screen_size,battery,price
+BrandA,Model1,Intel i5,8,256,14.0,4000,800
+BrandB,Model2,Intel i7,16,512,15.6,5000,1200
+BrandC,Model3,AMD Ryzen 5,8,256,13.3,4500,700
+BrandA,Model4,Intel i5,8,512,14.0,4200,850
+BrandB,Model5,Intel i7,16,512,15.6,5200,1250
+BrandC,Model6,AMD Ryzen 7,16,512,14.0,4800,1100
+BrandA,Model7,Intel i3,4,128,13.3,3500,600
+BrandB,Model8,Intel i9,32,1024,17.0,6000,2000
+BrandC,Model9,AMD Ryzen 5,8,256,15.6,4700,750
